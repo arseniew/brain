@@ -1,14 +1,29 @@
 const {app, BrowserWindow, Menu} = require('electron')
 const {dialog} = require('electron')
 const fs = require('fs')
+const path = require('path')
+const acorn = require('acorn')
+require('electron-reload')(__dirname);
 let win
 
 function createWindow () {
-  win = new BrowserWindow({width: 800, height: 600})
+  win = new BrowserWindow({width: 1200, height: 600})
   win.loadURL(`file://${__dirname}/index.html`)
 
   win.on('closed', () => {
     win = null
+  })
+
+  win.webContents.on('did-finish-load', () => {
+    openFile(win, path.resolve(__dirname, 'main.js'))
+  })
+}
+
+function openFile (instance, filename) {
+  fs.readFile(filename, (err, contents) => {
+    const text = contents.toString()
+    const ast = acorn.parse(text)
+    instance.webContents.send('file-open', {filename, text, ast});
   })
 }
 
@@ -35,12 +50,20 @@ Menu.setApplicationMenu(Menu.buildFromTemplate([
           const [selectedFile] =
             dialog.showOpenDialog({properties: ['openFile']}) || []
           if (!selectedFile) {return}
-          fs.readFile(selectedFile, (err, contents) => {
-            win.webContents.send('file-open', {
-              filename: selectedFile,
-              contents: contents.toString()
-            });
-          })
+          readFile(selectedFile);
+        }
+      }
+    ]
+  },
+  {
+    label: 'View',
+    submenu: [
+      {
+        label: 'Toggle Developer Tools',
+        accelerator: process.platform ===
+          'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+        click (item, focusedWindow) {
+          if (focusedWindow) focusedWindow.webContents.toggleDevTools()
         }
       }
     ]

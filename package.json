@@ -1,5 +1,11 @@
 {
   "name": "brain",
   "version": "0.0.1",
-  "main": "main.js"
+  "main": "main.js",
+  "devDependencies": {
+    "electron-reload": "^1.0.2"
+  },
+  "dependencies": {
+    "acorn": "^4.0.1"
+  }
 }

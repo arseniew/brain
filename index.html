@@ -4,19 +4,44 @@
   <meta charset="UTF-8">
   <title>Brain</title>
   <style>
+  html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
     #root {
+      display: flex;
+      height: 100%;
+    }
+    #content {
+      padding: .5em;
       font-family: monospace;
       white-space: pre;
+      overflow-y: scroll;
+      flex: 0 1 auto;
+    }
+    #map {
+      padding: .5em;
+      font-family: monospace;
+      white-space: pre;
+      background-color: #ede9ce;
+      overflow-y: scroll;
+      flex: 1 1 auto;
     }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div id="root">
+    <div id="content"></div>
+    <div id="map"></div>
+  </div>
   <script>
     const {ipcRenderer} = require('electron');
 
     ipcRenderer.on('file-open', (event, data) => {
-      document.querySelector('#root').textContent = data.contents
+      document.title = `Brain - ${data.filename}`
+      document.querySelector('#content').textContent = data.text
+      document.querySelector('#map').textContent = JSON.stringify(data.ast, null, 2)
     });
   </script>
 </body>
