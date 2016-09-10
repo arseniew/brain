@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Brain</title>
+  <style>
+    #root {
+      font-family: monospace;
+      white-space: pre;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    const {ipcRenderer} = require('electron');
+
+    ipcRenderer.on('file-open', (event, data) => {
+      document.querySelector('#root').textContent = data.contents
+    });
+  </script>
+</body>
+</html>
